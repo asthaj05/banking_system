@@ -1,0 +1,137 @@
+# BASE CASE (Parent class)
+
+class Account_Details:
+  def __init__(self,account_no, account_holder_name, mobile_no, email, account_type):
+    if len(account_no) == 10:
+      self.account_no = account_no
+    else:
+      raise ValueError("Account Number must be exactly equal to 10 digits")
+    
+    self.account_holder_name = account_holder_name
+    
+    if mobile_no == 10:
+      self.mobile_no = mobile_no
+    else:
+      raise ValueError("Mobile number must be equal to 10 digits")
+    
+    self.email = email
+    
+    self.account_type = account_type
+    
+  def Account_Balance(self, current_balance):
+    self.current_balance = current_balance
+    
+  
+  def Deposit(self, deposit_amount):
+    deposit_amount = float(input("Enter the amount to be deposited: "))   
+    self.current_balance += deposit_amount
+    print("\n Amount Deposited: ", deposit_amount)  
+
+  def Withdrawal(self, withdraw_amount):
+    withdraw_amount = float(input("Enter the amount to be withdrawn: "))
+    if self.current_balance >= withdraw_amount:
+      self.current_balance -= withdraw_amount
+      print("\n The amount to be withdrawn is: ",withdraw_amount)
+    else:
+      print("\n Insufficient balance")
+    
+
+# CHILD CLASS (inherit from parent)
+class Saving_Account(Account_Details):
+  def __init__(self, account_no, account_holder_name, mobile_no, email, account_type, principal, rate):
+    super().__init__(account_no, account_holder_name, mobile_no, email, account_type)
+    self.principal = principal
+    self.rate = rate
+    
+  def calculate_simple_interest(self,time):
+    return (self.principal*self.rate*time)/100
+ 
+ 
+# CHILD CLASS(inherit from parent)
+class Current_Account(Account_Details):
+  def __init__(self, account_no, account_holder_name, mobile_no, email,account_type):
+    super().__init__(account_no, account_holder_name, mobile_no, email,account_type)
+    pass
+ 
+
+
+bank_details = {}
+
+def add_update_details(account_no):
+  
+  if account_no in bank_details:
+    print(f"\n {account_no} already exists.")
+    update_details = input("Do you want to update details?(yes/no): ")
+    if update_details == "yes":
+      account_holder_name = input("Enter the holder name:")
+      mobile_no = input("Enter the mobile no: ")
+      email = input("Enter the email: ")
+      
+      bank_details[account_no]["account_holder_name"] = account_holder_name
+      bank_details[account_no]["mobile_no"] = mobile_no
+      bank_details[account_no]["email"] = email
+      print(f"\nUpdated details for {account_no}: ")
+  else:
+    print(f"\n {account_no} does not exist. Add new entry: ")
+    account_holder_name = input("Enter the holder name: ")
+    mobile_no = input("Enter the mobile_no: ")
+    email = input("Enter the email: ")
+    account_type = input("Enter the account type(savings/current): ")
+    
+    if account_type == 'savings':
+      principal = float(input("Enter the principal amount(current balance): "))
+      rate = float(input("Enter the annual interest rate(in %): "))
+      
+      SavingAccount = Saving_Account(principal, rate)
+      
+      print("\n Choose the saving plan duration: ")
+      print("\n1. 3 years")
+      print("\n2. 5 years")
+      print("\n3. 10 years")
+      
+      choice = int(input("Enter your chocie(1,2,3): "))
+      
+      if choice == 1:
+        time = 3
+      elif choice == 2:
+        time = 5
+      elif choice == 3:
+        time = 10
+      else:
+        print("Invalid choice! Please select a valid plan.")
+        
+      simple_interest = SavingAccount.calculate_simple_interest(time)
+      total_amount = SavingAccount.principal + simple_interest
+      
+      print(f"for {time} years annual interest rate is {rate}%, simple interest on current balance of {principal} is: ")
+      print("Total amount after {time} years will be: {total_amount}")
+    
+    elif account_type == 'current':
+      CurrentAccount = Current_Account()
+    else:
+      print("Invalid account type! Please enter a valid account type.")
+    
+    accountDetails = Account_Details(account_no,account_holder_name, mobile_no, email, account_type) 
+      
+    bank_details[account_no] = {
+      "account_holder_name" : account_holder_name,
+      "mobile_no" : mobile_no,
+      "email" : email,
+      "account_type": account_type,
+      
+    } 
+    print("\n Added new details for {account_no}: ")
+    
+while True:
+    account_no = int(input("Enter the account number(or type to '0' to quit): "))
+      
+    if account_no == 0:
+        break
+      
+    add_update_details(account_no)
+    
+print("\nFinal Dictionary of bank details: ", bank_details)
+for key, value in bank_details.items():
+    print(f"{key}:{value}")
+      
+  
